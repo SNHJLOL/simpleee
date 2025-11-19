@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>simple日记转HTML工具</title>
+    <title>simple动态转HTML工具</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- 引入JSZip库用于压缩文件 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root {
-            --primary: #c71d23; /* Gitee主题色 */
+            --primary: #c71d23; 
             --secondary: #a5181d;
             --light: #f8f9fc;
             --dark: #3a3b45;
@@ -334,6 +333,14 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.08);
             transition: all 0.3s;
         }
+
+        /* 针对相册中的所有音频播放器 */
+        .album-item audio {
+            width: 100%; /* 让音频播放器宽度占满父容器 */
+            /* 你还可以添加其他样式，比如： */
+            /* height: 40px; */
+            /* margin-top: 10px; */
+        }
         
         .album-item:hover {
             transform: translateY(-5px);
@@ -451,7 +458,6 @@
             font-size: 0.95rem;
         }
         
-        /* 下载进度条样式 */
         .progress-container {
             margin-top: 20px;
             height: 8px;
@@ -475,7 +481,6 @@
             display: none;
         }
         
-        /* 响应式设计 */
         @media (max-width: 768px) {
             header h1 {
                 font-size: 2.2rem;
@@ -519,13 +524,72 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* 格式信息面板样式 */
+        .format-info {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fc;
+            border-radius: 12px;
+            border-left: 4px solid var(--info);
+        }
+        
+        .format-info h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .format-info h3 i {
+            color: var(--info);
+        }
+        
+        .format-info ul {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .format-info li {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        /* 其他媒体类型样式 */
+        .other-media {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(54, 185, 204, 0.1);
+            border-radius: 12px;
+            color: var(--info);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .other-media:hover {
+            background: rgba(54, 185, 204, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .other-media i {
+            font-size: 1.2rem;
+        }
+        
+        .other-media span {
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1><i class="fas fa-images"></i> simple动态转HTML工具</h1>
-            <p>将JSON格式的日记数据转换为HTML页面，可先下载媒体到本地再进行转化</p>
+            <p>支持多种JSON格式的动态数据转换为HTML页面</p>
         </header>
         
         <div class="app-container">
@@ -535,7 +599,7 @@
                 <div class="upload-box" id="uploadBox">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <h3>点击或拖放JSON文件</h3>
-                    <p>支持包含图片、视频、音频的日记JSON格式</p>
+                    <p>支持两种格式的JSON文件</p>
                     <p>上传后将自动生成预览</p>
                     <input type="file" id="jsonInput" accept=".json">
                 </div>
@@ -552,27 +616,17 @@
                     </button>
                 </div>
                 
-                <!-- 下载进度条 -->
                 <div class="progress-container" id="progressContainer">
                     <div class="progress-bar" id="progressBar"></div>
                 </div>
                 <div class="download-status" id="downloadStatus"></div>
                 
-                <div style="margin-top: 30px; padding: 15px; background: #f8f9fc; border-radius: 12px;">
-                    <h3 style="color: var(--dark); margin-bottom: 15px;">JSON格式要求：</h3>
-                    <pre style="background: white; padding: 15px; border-radius: 8px; font-size: 0.85rem;">
-{
-  "date": "2025-07-26T05:20:00",
-  "title": "示例日记",
-  "content": "今天去海边游玩...",
-  "tags": ["旅行", "海边"],
-  "album": [
-    {"type": "image", "url": "image1.jpg", "caption": "海边风景"},
-    {"type": "video", "url": "video1.mp4"}
-  ],
-  "audio": "audio1.mp3",
-  "music": "https://music.example.com/song123"
-}</pre>
+                <div class="format-info">
+                    <h3><i class="fas fa-info-circle"></i> 支持的JSON格式</h3>
+                    <ul>
+                        <li><strong>格式1</strong>：simple动态格式（文档1）</li>
+                        <li><strong>格式2</strong>：标准日记格式（文档2）</li>
+                    </ul>
                 </div>
             </div>
             
@@ -582,63 +636,33 @@
                     <!-- 示例条目 -->
                     <div class="entry">
                         <div class="entry-header">
-                            <div class="entry-date">2025-08-05 10:30:45</div>
+                            <div class="entry-date">2025-08-19 10:09:13</div>
                             <div class="entry-tags">
                                 <span class="tag">示例</span>
-                                <span class="tag tag-info">多媒体</span>
+                                <span class="tag tag-info">欢迎使用</span>
                             </div>
                         </div>
                         <div class="entry-content">
-                            上传JSON文件后，这里将显示您的日记内容。
-                            支持多种媒体类型显示：
-                            - 图片相册
-                            - 视频播放器
-                            - 音频播放器
-                            - 音乐链接
+                            上传JSON文件后，这里将显示您的动态内容。
+                            
+                            本工具支持两种JSON格式：
+                            1. Simple动态格式（文档1）
+                            2. 标准日记格式（文档2）
+                            
+                            上传后系统会自动检测格式并进行转换。
                         </div>
                         
                         <div class="media-section">
                             <div class="section-heading">
                                 <i class="fas fa-camera"></i>
-                                <span>图片和视频</span>
+                                <span>示例图片</span>
                             </div>
                             <div class="album">
                                 <div class="album-item">
-                                    <img src="https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?auto=format&fit=crop&w=600" alt="自然风景">
+                                    
                                     <div class="media-caption">示例图片</div>
                                 </div>
-                                <div class="album-item">
-                                    <video controls>
-                                        <source src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" type="video/mp4">
-                                        您的浏览器不支持视频标签
-                                    </video>
-                                    <div class="media-caption">示例视频</div>
-                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="media-section">
-                            <div class="section-heading">
-                                <i class="fas fa-volume-up"></i>
-                                <span>音频内容</span>
-                            </div>
-                            <div class="audio-player">
-                                <audio controls>
-                                    <source src="https://sample-videos.com/audio/mp3/crowd-cheering.mp3" type="audio/mp3">
-                                    您的浏览器不支持音频元素
-                                </audio>
-                            </div>
-                        </div>
-                        
-                        <div class="media-section">
-                            <div class="section-heading">
-                                <i class="fas fa-music"></i>
-                                <span>音乐链接</span>
-                            </div>
-                            <a href="https://music.example.com/song123" class="music-link">
-                                <i class="fas fa-external-link-alt"></i>
-                                <span>点击收听今天的推荐音乐</span>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -646,7 +670,7 @@
         </div>
         
         <footer>
-            <p>© 2025 simple动态转HTML工具 | 基于Web技术构建 | @喜</p>
+            <p>© 2025 simple动态转HTML工具 | 基于Web技术构建 | 当前时间: 2025-08-19 10:09:13</p>
         </footer>
     </div>
 
@@ -705,42 +729,39 @@
             uploadBox.innerHTML = `
                 <i class="fas fa-cloud-upload-alt"></i>
                 <h3>点击或拖放JSON文件</h3>
-                <p>支持包含图片、视频、音频的日记JSON格式</p>
+                <p>支持两种格式的JSON文件</p>
                 <p>上传后将自动生成预览</p>
                 <input type="file" id="jsonInput" accept=".json">
             `;
             originalDiaryData = null;
-            renderDiary([sampleEntry]);
+            renderDiary([getSampleEntry()]);
             exportHtmlBtn.disabled = true;
             downloadMediaBtn.disabled = true;
             progressContainer.style.display = 'none';
             downloadStatus.style.display = 'none';
         });
         
-        // 示例条目数据
-        const sampleEntry = {
-            date: "2025-08-05T10:30:45",
-            title: "示例日记",
-            content: "这是一个展示各种媒体类型的示例日记，包含图片、视频、音频和音乐链接。\n\n上传您的JSON文件后，这里将显示您的实际日记内容。",
-            tags: ["示例", "多媒体"],
-            album: [
-                {
-                    type: "image",
-                    url: "https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?auto=format&fit=crop&w=600",
-                    caption: "自然风景"
-                },
-                {
-                    type: "video",
-                    url: "http://vjs.zencdn.net/v/oceans.mp4",
-                    caption: "示例视频"
-                }
-            ],
-            audio: "http://music.163.com/song/media/outer/url?id=447925558.mp3",
-            music: "https://y.music.163.com/m/song?id=65800&uct2=ZGZ23VvH8fSzM4pMlgbO%2Bg%3D%3D&fx-wechatnew=t1&fx-wxqd=&fx-wordtest=&fx-listentest=t3&H5_DownloadVIPGift=&playerUIModeId=76001&PlayerStyles_SynchronousSharing=t3&dlt=0846&app_version=9.3.40&sc=wm&tn="
-        };
+        // 获取示例条目数据
+        function getSampleEntry() {
+            return {
+                date: new Date().toISOString(),
+                title: "示例日记",
+                content: "这是一个展示各种媒体类型的示例日记，包含图片、视频、音频和音乐链接。\n\n上传您的JSON文件后，这里将显示您的实际日记内容。",
+                tags: ["示例", "多媒体"],
+                album: [
+                    {
+                        type: "image",
+                        url: "https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?auto=format&fit=crop&w=600",
+                        caption: "自然风景"
+                    }
+                ],
+                audio: "http://music.163.com/song/media/outer/url?id=447925558.mp3",
+                music: "https://music.example.com/song123"
+            };
+        }
         
         // 初始渲染示例
-        renderDiary([sampleEntry]);
+        renderDiary([getSampleEntry()]);
         
         // 处理上传的JSON文件
         function handleFile(file) {
@@ -752,7 +773,12 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const diaryData = JSON.parse(e.target.result);
+                    let diaryData = JSON.parse(e.target.result);
+                    
+                    // 检测并转换simple格式
+                    if (isSimpleFormat(diaryData)) {
+                        diaryData = transformSimpleData(diaryData);
+                    }
                     
                     // 保存原始数据
                     originalDiaryData = diaryData;
@@ -778,6 +804,53 @@
             reader.readAsText(file);
         }
         
+        // 检测是否为simple格式
+        function isSimpleFormat(data) {
+            if (Array.isArray(data) && data.length > 0) {
+                const firstItem = data[0];
+                return firstItem.hasOwnProperty('id') && 
+                       firstItem.hasOwnProperty('user') && 
+                       firstItem.hasOwnProperty('content');
+            }
+            return false;
+        }
+        
+        // 转换simple格式数据为标准格式
+        function transformSimpleData(data) {
+            return data.map(post => {
+                // 提取标签
+                const tags = [];
+                if (post.post_collection) {
+                    tags.push(post.post_collection.name);
+                }
+                
+                // 处理媒体文件
+                const album = [];
+                if (post.media && Array.isArray(post.media)) {
+                    post.media.forEach(media => {
+                        let type = media.type;
+                        
+                        album.push({
+                            type: type,
+                            url: media.url,
+                            caption: '' // 原始数据中没有caption
+                        });
+                    });
+                }
+                
+                // 构建新格式的条目
+                return {
+                    date: post.created_at,
+                    content: post.content,
+                    tags: tags,
+                    album: album,
+                    // 原始数据中没有音频和音乐字段，保持为空
+                    audio: null,
+                    music: null
+                };
+            });
+        }
+        
         // 渲染日记内容
         function renderDiary(entries) {
             diaryContainer.innerHTML = '';
@@ -799,44 +872,90 @@
                 
                 // 内容
                 const contentHTML = entry.content ? `<div class="entry-content">${linkify(entry.content)}</div>` : '';
-                
+            
                 // 相册媒体
                 let albumHTML = '';
+                let otherMediaHTML = '';
                 if (entry.album && entry.album.length) {
                     let albumItems = '';
+                    let otherMediaItems = '';
                     
                     entry.album.forEach(media => {
-                        if (media.type === 'image') {
-                            albumItems += `
-                                <div class="album-item">
-                                    <img src="${media.url}" alt="${media.caption || '图片'}">
-                                    ${media.caption ? `<div class="media-caption">${media.caption}</div>` : ''}
-                                </div>
-                            `;
-                        } else if (media.type === 'video') {
-                            albumItems += `
-                                <div class="album-item">
-                                    <video controls>
-                                        <source src="${media.url}" type="video/mp4">
-                                        您的浏览器不支持视频标签
-                                    </video>
-                                    ${media.caption ? `<div class="media-caption">${media.caption}</div>` : ''}
+                        if (media.type === 'image' || media.type === 'video' || media.type === 'audio') {
+                            if (media.type === 'image') {
+                                albumItems += `
+                                    <div class="album-item">
+                                        
+                                        <img src="${media.url}" alt="${media.caption || '图片内容'}" 
+                                     width="100%" height="180px" object-fit="cover">
+                                ${media.caption ? `<div class="media-caption">${media.caption}</div>` : ''}
+                                    </div>
+                                `;
+                            } else if (media.type === 'video') {
+                                albumItems += `
+                                    <div class="album-item">
+                                        <video controls>
+                                            <source src="${media.url}" type="video/mp4">
+                                            您的浏览器不支持视频标签
+                                        </video>
+                                        ${media.caption ? `<div class="media-caption">${media.caption}</div>` : ''}
+                                    </div>
+                                `;
+                            }else if (media.type === 'audio') { // 新增 audio 类型处理
+                                    albumItems += `
+                        <div class="album-item">
+                            <audio controls width="100%" height="60px">
+                                <source src="${media.url}" type="audio/mp3">
+                                您的浏览器不支持音频元素
+                            </audio>
+                            ${media.caption ? `<div class="media-caption">${media.caption}</div>` : ''}
+                        </div>
+                    `;
+                }
+
+                        } else {
+                            // 其他媒体类型直接显示URL
+                            let iconClass = 'fas fa-file';
+                            if (media.type === 'audio') {
+                                iconClass = 'fas fa-volume-up';
+                            } else if (media.type === 'live_photo') {
+                                iconClass = 'fas fa-camera-retro';
+                            }
+                            
+                            otherMediaItems += `
+                                <div class="other-media">
+                                    <i class="${iconClass}"></i>
+                                    <span>${media.type}: <a href="${media.url}" target="_blank">${media.url}</a></span>
                                 </div>
                             `;
                         }
                     });
                     
-                    albumHTML = `
-                        <div class="media-section">
-                            <div class="section-heading">
-                                <i class="fas fa-camera"></i>
-                                <span>图片和视频</span>
+                    if (albumItems) {
+                        albumHTML = `
+                            <div class="media-section">
+                                <div class="section-heading">
+                                    <i class="fas fa-camera"></i>
+                                    <span>图片、音频和视频/span>
+                                </div>
+                                <div class="album">
+                                    ${albumItems}
+                                </div>
                             </div>
-                            <div class="album">
-                                ${albumItems}
+                        `;
+                    }
+                    
+                    if (otherMediaItems) {
+                        otherMediaHTML = `
+                            <div class="media-section">
+                                <div class="section-heading">
+                                    <i class="fas fa-link"></i>
+                                    <span>其他媒体链接</span>
+                                </div>
+                                ${otherMediaItems}
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 }
                 
                 // 音频
@@ -884,6 +1003,7 @@
                     ${albumHTML}
                     ${audioHTML}
                     ${musicHTML}
+                    ${otherMediaHTML}
                 `;
                 
                 diaryContainer.appendChild(entryElement);
@@ -921,20 +1041,18 @@
             
             const htmlContent = `
                 <!DOCTYPE html>
-        <html lang="zh-CN">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>simple日志导出--喜--1.0</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-            <style>${style}</style>
-        </head>
-        <body>
-
-                ${diaryContainer.innerHTML}
-
-        </body>
-        </html>
+                <html lang="zh-CN">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>simple日志导出--喜--1.0</title>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                    <style>${style}</style>
+                </head>
+                <body>
+                    ${diaryContainer.innerHTML}
+                </body>
+                </html>
             `;
             
             const blob = new Blob([htmlContent], { type: 'text/html' });
@@ -965,7 +1083,7 @@
                 // 创建ZIP压缩包
                 const zip = new JSZip();
                 
-                // 提取所有媒体URL
+                // 提取所有媒体URL（只提取audio、image、video类型）
                 const mediaFiles = extractMediaUrls(originalDiaryData);
                 const totalFiles = mediaFiles.length;
                 
@@ -1004,10 +1122,11 @@
                     }
                 }
                 
-                // 添加本地JSON文件到ZIP
-                downloadStatus.textContent = '正在准备本地JSON文件...';
-                const jsonString = JSON.stringify(localDiaryData, null, 2);
-                zip.file('local-diary-data.json', jsonString);
+                // 生成HTML文件内容
+                downloadStatus.textContent = '正在生成HTML文件...';
+                const style = document.querySelector('style').innerHTML;
+                const htmlContent = generateHTMLWithLocalPaths(localDiaryData, style);
+                zip.file('diary.html', htmlContent);
                 
                 // 生成ZIP文件并下载
                 downloadStatus.textContent = '正在生成压缩包...';
@@ -1027,7 +1146,7 @@
                     URL.revokeObjectURL(url);
                     
                     setTimeout(() => {
-                        alert('压缩包生成完成！包含所有媒体文件和本地JSON文件。');
+                        alert('压缩包生成完成！包含所有媒体文件和HTML文件。');
                         resetProgress();
                     }, 1000);
                 });
@@ -1039,16 +1158,192 @@
             }
         });
         
-        // 提取所有媒体URL
+        // 生成带有本地路径的HTML内容
+        function generateHTMLWithLocalPaths(diaryData, style) {
+            const entries = Array.isArray(diaryData) ? diaryData : [diaryData];
+            let htmlContent = '';
+            
+            entries.forEach(entry => {
+                // 日期
+                const date = formatDate(entry.date);
+                
+                // 标签
+                let tagsHTML = '';
+                if (entry.tags && entry.tags.length) {
+                    tagsHTML = `<div class="entry-tags">${
+                        entry.tags.map(tag => `<span class="tag">${tag}</span>`).join('')
+                    }</div>`;
+                }
+                
+                // 内容
+                const contentHTML = entry.content ? `<div class="entry-content">${linkify(entry.content)}</div>` : '';
+            
+                // 相册媒体
+                let albumHTML = '';
+                let otherMediaHTML = '';
+                if (entry.album && entry.album.length) {
+                    let albumItems = '';
+                    let otherMediaItems = '';
+                    
+                    entry.album.forEach(media => {
+                        if (media.type === 'image' || media.type === 'video'|| media.type === 'audio') {
+                            if (media.type === 'image') {
+                                albumItems += `
+                                    <div class="album-item">
+                                        
+                                        <img src="${media.url}" alt="${media.caption || '图片内容'}" 
+                                     width="100%" height="180px" object-fit="cover">
+                                ${media.caption ? `<div class="media-caption">${media.caption}</div>` : ''}
+                                    </div>
+                                `;
+                            } else if (media.type === 'video') {
+                                albumItems += `
+                                    <div class="album-item">
+                                        <video controls>
+                                            <source src="${media.url}" type="video/mp4">
+                                            您的浏览器不支持视频标签
+                                        </video>
+                                        ${media.caption ? `<div class="media-caption">${media.caption}</div>` : ''}
+                                    </div>
+                                `;
+                            }else if (media.type === 'audio') { // 新增 audio 类型处理
+                                    albumItems += `
+                        <div class="album-item">
+                            <audio controls width="100%" height="60px">
+                                <source src="${media.url}" type="audio/mp3">
+                                您的浏览器不支持音频元素
+                            </audio>
+                            ${media.caption ? `<div class="media-caption">${media.caption}</div>` : ''}
+                        </div>
+                    `;
+                }
+                        } else {
+                            // 其他媒体类型直接显示URL
+                            let iconClass = 'fas fa-file';
+                            if (media.type === 'audio') {
+                                iconClass = 'fas fa-volume-up';
+                            } else if (media.type === 'live_photo') {
+                                iconClass = 'fas fa-camera-retro';
+                            }
+                            
+                            otherMediaItems += `
+                                <div class="other-media">
+                                    <i class="${iconClass}"></i>
+                                    <span>${media.type}: <a href="${media.url}" target="_blank">${media.url}</a></span>
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    if (albumItems) {
+                        albumHTML = `
+                            <div class="media-section">
+                                <div class="section-heading">
+                                    <i class="fas fa-camera"></i>
+                                    <span>图片、音频和视频</span>
+                                </div>
+                                <div class="album">
+                                    ${albumItems}
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (otherMediaItems) {
+                        otherMediaHTML = `
+                            <div class="media-section">
+                                <div class="section-heading">
+                                    <i class="fas fa-link"></i>
+                                    <span>其他媒体链接</span>
+                                </div>
+                                ${otherMediaItems}
+                            </div>
+                        `;
+                    }
+                }
+                
+                // 音频
+                let audioHTML = '';
+                if (entry.audio) {
+                    audioHTML = `
+                        <div class="media-section">
+                            <div class="section-heading">
+                                <i class="fas fa-volume-up"></i>
+                                <span>音频内容</span>
+                            </div>
+                            <div class="audio-player">
+                                <audio controls>
+                                    <source src="${entry.audio}" type="audio/mp3">
+                                    您的浏览器不支持音频元素
+                                </audio>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // 音乐链接
+                let musicHTML = '';
+                if (entry.music) {
+                    musicHTML = `
+                        <div class="media-section">
+                            <div class="section-heading">
+                                <i class="fas fa-music"></i>
+                                <span>音乐链接</span>
+                            </div>
+                            <a href="${entry.music}" class="music-link" target="_blank">
+                                <i class="fas fa-external-link-alt"></i>
+                                <span>点击收听音乐</span>
+                            </a>
+                        </div>
+                    `;
+                }
+                
+                htmlContent += `
+                    <div class="entry">
+                        <div class="entry-header">
+                            <div class="entry-date">${date}</div>
+                            ${tagsHTML}
+                        </div>
+                        ${contentHTML}
+                        ${albumHTML}
+                        ${audioHTML}
+                        ${musicHTML}
+                        ${otherMediaHTML}
+                    </div>
+                `;
+            });
+            
+            return `
+                <!DOCTYPE html>
+                <html lang="zh-CN">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>simple日志导出</title>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                    <style>${style}</style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="diary-container">
+                            ${htmlContent}
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+        
+        // 提取所有媒体URL（只提取audio、image、video类型）
         function extractMediaUrls(diaryData) {
             const mediaFiles = [];
             const entries = Array.isArray(diaryData) ? diaryData : [diaryData];
             
             entries.forEach((entry, entryIndex) => {
-                // 处理相册中的媒体
+                // 处理相册中的媒体（只提取audio、image、video类型）
                 if (entry.album && entry.album.length) {
                     entry.album.forEach((media, mediaIndex) => {
-                        if (media.url && isAbsoluteUrl(media.url)) {
+                        if (media.url && isAbsoluteUrl(media.url) && ['audio', 'image', 'video'].includes(media.type)) {
                             mediaFiles.push({
                                 url: media.url,
                                 type: media.type,
